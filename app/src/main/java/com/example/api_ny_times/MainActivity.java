@@ -8,6 +8,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.gson.GsonBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,13 +20,14 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     public static String URL = "https://api.nytimes.com/svc/movies/v2/reviews/search.json?query=france&api-key=QUTFOkYDjdAwxavWDdVZGVbbyEkb6Dhh";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
 
-    private void init(){
+    private void init() {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 URL,
@@ -35,10 +37,13 @@ public class MainActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         String status = response.optString("status");
                         String num_result = response.optString("num_results");
-                        if (status == "200"){
+                        if (status.equals("OK") & Integer.parseInt(num_result) > 0) {
                             JSONArray jsonArray = response.optJSONArray("results");
                             List<Result> results = Arrays.asList(new GsonBuilder().create().fromJson(jsonArray.toString(),
-                            Result[].class));
+                                    Result[].class));
+
+
+
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -48,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         );
-
     }
 }
 
